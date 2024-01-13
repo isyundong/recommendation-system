@@ -1,0 +1,46 @@
+buildscript {
+    allprojects {
+        gradle.projectsEvaluated {
+            allprojects {
+                jar { enabled = true }
+            }
+        }
+    }
+}
+
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+    sourceCompatibility = '21'
+
+    group = 'com.isyundong'
+    version = '0.0.2-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    bootJar {
+        enabled = false
+    }
+}
+
+subprojects {
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        implementation "org.springframework.boot:spring-boot-starter-web"
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+}
