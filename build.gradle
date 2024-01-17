@@ -40,7 +40,13 @@ subprojects {
 
     dependencies {
         compileOnly 'org.projectlombok:lombok'
+
+        annotationProcessor "org.projectlombok:lombok"
+
+        implementation "redis.clients:jedis:5.1.0"
         implementation "org.springframework.boot:spring-boot-starter-web"
+        implementation "org.springframework.boot:spring-boot-starter-data-redis"
+
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 }

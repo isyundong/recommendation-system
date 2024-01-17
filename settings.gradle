@@ -1,3 +1,6 @@
 rootProject.name = 'recommendation-system'
 
 include 'recommendation-orchestrate'
+include 'recommendation-datacenter'
+include 'recommendation-toolbox'
+

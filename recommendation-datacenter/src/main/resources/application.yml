@@ -1,0 +1,8 @@
+redis:
+  configs:
+  - instant-name: Local
+    database: 0
+    host: 172.22.203.182
+    port: 6379
+    password:
+    timeout: 0
