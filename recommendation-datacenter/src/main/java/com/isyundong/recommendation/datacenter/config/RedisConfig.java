@@ -1,6 +1,5 @@
 package com.isyundong.recommendation.datacenter.config;
 
-import io.lettuce.core.dynamic.annotation.CommandNaming;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

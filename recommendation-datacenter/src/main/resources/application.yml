@@ -1,8 +1,14 @@
 redis:
   configs:
-  - instant-name: Local
+  - instant-name: node_01
     database: 0
     host: 172.22.203.182
-    port: 6379
-    password:
+    port: 10101
+    password: 123456
+    timeout: 0
+  - instant-name: node_02
+    database: 0
+    host: 172.22.203.182
+    port: 10102
+    password: 123456
     timeout: 0

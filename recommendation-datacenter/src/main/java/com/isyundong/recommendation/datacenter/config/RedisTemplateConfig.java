@@ -4,17 +4,18 @@ package com.isyundong.recommendation.datacenter.config;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.time.Duration;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -24,7 +25,7 @@ public class RedisTemplateConfig {
 
     private final RedisConfig redisConfig;
 
-    private final List<RedisTemplate<String, ?>> redisTemplates;
+    private final List<RedisTemplate<String, ?>> redisTemplates = new ArrayList<>();
 
     @PostConstruct
     public synchronized void buildRedisTemplates() {
@@ -32,51 +33,47 @@ public class RedisTemplateConfig {
             return;
         }
         for (RedisConfig.RedisProperties redisProperties : redisConfig.getConfigs()) {
-
-            RedisTemplate<String, ?> redisTemplate = new RedisTemplate<>();
-
-            redisTemplate.setKeySerializer(redisTemplate.getStringSerializer());
-//            redisTemplate.setValueSerializer(stringRedisSerializer);
-            redisTemplate.setHashKeySerializer(redisTemplate.getStringSerializer());
-            redisTemplate.setHashValueSerializer(redisTemplate.getStringSerializer());
-            redisTemplate.setConnectionFactory(buildConnectFactory(redisProperties));
-
-            redisTemplates.add(redisTemplate);
+            redisTemplates.add(buildRedisTemplateInstance(redisProperties));
         }
     }
 
-
-    private JedisConnectionFactory buildConnectFactory(RedisConfig.RedisProperties redisProperties) {
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-//            poolConfig.setMaxTotal(maxActive);
-//            poolConfig.setMaxIdle(maxIdle);
-//            poolConfig.setMaxWait(maxWait);
-//            poolConfig.setMinIdle(minIdle);
-        poolConfig.setTestOnBorrow(true);
-        poolConfig.setTestOnReturn(false);
-        poolConfig.setTestWhileIdle(true);
-        JedisClientConfiguration clientConfig = JedisClientConfiguration.builder()
-                .usePooling()
-                .poolConfig(poolConfig)
-                .and()
-                .readTimeout(Duration.ofMillis(redisProperties.getTimeout()))
-                .build();
-
-        // 单点redis
-        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
-        // 哨兵redis
-        // RedisSentinelConfiguration redisConfig = new RedisSentinelConfiguration();
-        // 集群redis
-        // RedisClusterConfiguration redisConfig = new RedisClusterConfiguration();
-        redisConfig.setHostName(redisProperties.getHost());
-        redisConfig.setPort(redisProperties.getPort());
-        redisConfig.setPassword(RedisPassword.of(redisProperties.getPassword()));
-        redisConfig.setDatabase(Integer.parseInt(redisProperties.getDatabase()));
-
-
-        return new JedisConnectionFactory(redisConfig, clientConfig);
+    private synchronized RedisTemplate<String, ?> buildRedisTemplateInstance(RedisConfig.RedisProperties redisProperties) {
+        return buildRedisTemplate(buildConnectFactory(redisProperties));
     }
 
+    private LettuceConnectionFactory buildConnectFactory(RedisConfig.RedisProperties redisProperties) {
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(buildConfiguration(redisProperties), buildClientConfiguration(redisProperties));
+        factory.setDatabase(Integer.parseInt(redisProperties.getDatabase()));
+        factory.afterPropertiesSet();
+
+        return factory;
+    }
+
+    private LettuceClientConfiguration buildClientConfiguration(RedisConfig.RedisProperties redisProperties) {
+        return LettucePoolingClientConfiguration
+                .builder()
+                .commandTimeout(Duration.ofSeconds(redisProperties.getTimeout()))
+//                .poolConfig(getPoolConfig(redisProperties))
+                .build();
+    }
+
+    private RedisStandaloneConfiguration buildConfiguration(RedisConfig.RedisProperties redisProperties) {
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(redisProperties.getHost());
+        configuration.setPort(redisProperties.getPort());
+        configuration.setPassword(RedisPassword.of(redisProperties.getPassword()));
+        return configuration;
+    }
+
+
+    private RedisTemplate<String, ?> buildRedisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, ?> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(factory);
+        redisTemplate.setKeySerializer(redisTemplate.getStringSerializer());
+        redisTemplate.setValueSerializer(redisTemplate.getStringSerializer());
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
 
     public List<RedisTemplate<String, ?>> getRedisTemplates() {
         if (redisTemplates.isEmpty()) {
