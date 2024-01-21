@@ -1,8 +1,7 @@
-package com.isyundong.recommendation.toolbox.openSearch;
+package com.isyundong.recommendation.toolbox.funcation;
 
 
-
-import com.isyundong.recommendation.toolbox.StringUtils;
+import com.isyundong.recommendation.toolbox.StringUtil;
 import com.isyundong.recommendation.toolbox.exception.RecommendationException;
 
 import java.io.Serializable;
@@ -11,14 +10,14 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface EFunction<T, R> extends Function<T, R>, Serializable {
+public interface ExtractNameFunction<T, R> extends Function<T, R>, Serializable {
 
     default String getFieldName() {
         String methodName = getMethodName();
         if (methodName.startsWith("get")) {
             methodName = methodName.substring(3);
         }
-        return StringUtils.initialLetterToLowerCase(methodName);
+        return StringUtil.initialLetterToLowerCase(methodName);
     }
 
 

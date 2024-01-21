@@ -1,4 +1,4 @@
-package com.isyundong.recommendation.toolbox.openSearch.base;
+package com.isyundong.recommendation.toolbox.openSearch.base.query;
 
 import com.alibaba.fastjson.JSON;
 import com.isyundong.recommendation.toolbox.ValidateUtil;

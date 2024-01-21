@@ -1,6 +1,6 @@
 package com.isyundong.recommendation.datacenter.service.impl;
 
-import com.isyundong.recommendation.datacenter.config.RedisTemplateConfig;
+import com.isyundong.recommendation.datacenter.config.redis.RedisTemplateConfig;
 import com.isyundong.recommendation.datacenter.service.RedisService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

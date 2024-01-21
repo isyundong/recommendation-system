@@ -1,9 +1,9 @@
-package com.isyundong.recommendation.toolbox.openSearch;
+package com.isyundong.recommendation.toolbox;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.isyundong.recommendation.toolbox.ValidateUtil;
 import com.isyundong.recommendation.toolbox.exception.RecommendationException;
+import com.isyundong.recommendation.toolbox.openSearch.wrapper.OpenSearchQueryWrapper;
 import com.isyundong.recommendation.toolbox.openSearch.annotations.OpenSearchIndex;
 import com.isyundong.recommendation.toolbox.openSearch.param.Param;
 import com.isyundong.recommendation.toolbox.openSearch.response.SearchResponse;
@@ -44,8 +44,8 @@ public class OpenSearchUtil {
         return JSON.parseObject(content2Str(client.performRequest(request).getEntity().getContent()), new TypeReference<SearchResponse<T>>(domain) {});
     }
 
-    public static <TDocument> String index(Class<TDocument> indexClass) {
-        return indexClass.getAnnotation(OpenSearchIndex.class).index();
+    public static <TDocument> String indexName(Class<TDocument> indexClass) {
+        return indexClass.getAnnotation(OpenSearchIndex.class).indexName();
     }
 
     /**
@@ -55,7 +55,7 @@ public class OpenSearchUtil {
         if (StringUtils.isNotBlank(wrapper.getIndex())) {
             return wrapper.getIndex();
         } else {
-            return index(wrapper.getIndexClass());
+            return indexName(wrapper.getIndexClass());
         }
     }
 

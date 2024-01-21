@@ -1,7 +1,7 @@
 package com.isyundong.recommendation.toolbox.openSearch.param;
 
-import com.isyundong.recommendation.toolbox.openSearch.base.Query;
-import com.isyundong.recommendation.toolbox.openSearch.base.Query.QueryType;
+import com.isyundong.recommendation.toolbox.openSearch.base.query.Query;
+import com.isyundong.recommendation.toolbox.openSearch.base.query.Query.QueryType;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;

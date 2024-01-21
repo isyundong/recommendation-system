@@ -3,7 +3,7 @@ package com.isyundong.recommendation.toolbox;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StringUtils{
+public class StringUtil{
 
     private static final Pattern upperCaseLetterPattern = Pattern.compile("[A-Z]");
     private static final Pattern lowerCaseLetterPattern = Pattern.compile("_[a-z]");

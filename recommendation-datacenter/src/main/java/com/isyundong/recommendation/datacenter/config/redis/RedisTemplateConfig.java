@@ -1,8 +1,9 @@
-package com.isyundong.recommendation.datacenter.config;
+package com.isyundong.recommendation.datacenter.config.redis;
 
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
@@ -32,7 +33,7 @@ public class RedisTemplateConfig {
         if (!CollectionUtils.isEmpty(redisTemplates)) {
             return;
         }
-        for (RedisConfig.RedisProperties redisProperties : redisConfig.getConfigs()) {
+        for (RedisConfig.RedisProperties redisProperties : redisConfig.getInstanceConfigs()) {
             redisTemplates.add(buildRedisTemplateInstance(redisProperties));
         }
     }
@@ -42,7 +43,7 @@ public class RedisTemplateConfig {
     }
 
     private LettuceConnectionFactory buildConnectFactory(RedisConfig.RedisProperties redisProperties) {
-        LettuceConnectionFactory factory = new LettuceConnectionFactory(buildConfiguration(redisProperties), buildClientConfiguration(redisProperties));
+        final LettuceConnectionFactory factory = new LettuceConnectionFactory(buildConfiguration(redisProperties), buildClientConfiguration(redisProperties));
         factory.setDatabase(Integer.parseInt(redisProperties.getDatabase()));
         factory.afterPropertiesSet();
 
@@ -58,7 +59,7 @@ public class RedisTemplateConfig {
     }
 
     private RedisStandaloneConfiguration buildConfiguration(RedisConfig.RedisProperties redisProperties) {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        final RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(redisProperties.getHost());
         configuration.setPort(redisProperties.getPort());
         configuration.setPassword(RedisPassword.of(redisProperties.getPassword()));
@@ -67,7 +68,7 @@ public class RedisTemplateConfig {
 
 
     private RedisTemplate<String, ?> buildRedisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, ?> redisTemplate = new RedisTemplate<>();
+        final RedisTemplate<String, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(factory);
         redisTemplate.setKeySerializer(redisTemplate.getStringSerializer());
         redisTemplate.setValueSerializer(redisTemplate.getStringSerializer());
